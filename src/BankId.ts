@@ -14,10 +14,10 @@ export class BankIdError {
   description: string;
   status: string;
 
-  constructor(err) {
+  constructor(err, description: string = "") {
     if (typeof err === "string") {
-      this.description = err;
-      this.status = "ERROR";
+      this.description = description;
+      this.status = err;
     } else {
       const fault = this.parse(err, "root.Envelope.Body.Fault.detail.RpFault");
       this.status = fault.faultStatus;
@@ -135,7 +135,10 @@ export default class BankId {
 
     if (userVisibleData.length > 40 * 1000) {
       //TODO add error message
-      throw new BankIdError("User visible data exceeds 40k chars");
+      throw new BankIdError(
+        "CLIENT_ERROR",
+        "User visible data exceeds 40k chars"
+      );
     }
 
     const base64nonVisibleData = new Buffer(userNonVisibleData).toString(
@@ -143,7 +146,10 @@ export default class BankId {
     );
     if (base64nonVisibleData.length > 200 * 1000) {
       //TODO add error message
-      throw new BankIdError("User non-visible data exceeds 200k chars");
+      throw new BankIdError(
+        "CLIENT_ERROR",
+        "User non-visible data exceeds 200k chars"
+      );
     }
 
     const params = Object.assign(
@@ -163,25 +169,6 @@ export default class BankId {
     } catch (err) {
       throw new BankIdError(err);
     }
-  }
-
-  private sleep(ms) {
-    let timerId, endTimer;
-    class TimedPromise extends Promise<any> {
-      isCanceled: boolean = false;
-      cancel = () => {
-        endTimer();
-        clearTimeout(timerId);
-        this.isCanceled = true;
-      };
-      constructor(fn) {
-        super(fn);
-      }
-    }
-    return new TimedPromise(resolve => {
-      endTimer = resolve;
-      timerId = setTimeout(endTimer, ms);
-    });
   }
 
   async collect(
@@ -211,9 +198,19 @@ export default class BankId {
           }
           lastStatus = progressStatus;
           inProgress = false;
-          if (progressStatus === "COMPLETE") {
+          if (
+            progressStatus === "COMPLETE" ||
+            progressStatus === "NO_CLIENT" ||
+            progressStatus === "EXPIRED_TRANSACTION"
+          ) {
             clearInterval(interval);
             resolution();
+            if (
+              progressStatus === "NO_CLIENT" ||
+              progressStatus === "EXPIRED_TRANSACTION"
+            ) {
+              error = progressStatus;
+            }
           }
         } catch (err) {
           inProgress = false;
