@@ -2,6 +2,9 @@ import * as soap from "soap";
 import * as fs from "fs";
 import * as path from "path";
 
+import { BankIdOptions } from "./Models/BankIdOptions";
+import { BankIdError } from "./Models/BankIdError";
+
 const readFileAsync = (filePath, opts?: string) =>
   new Promise((res, rej) => {
     fs.readFile(filePath, opts, (err, data) => {
@@ -9,47 +12,6 @@ const readFileAsync = (filePath, opts?: string) =>
       else res(data);
     });
   });
-
-export class BankIdError {
-  description: string;
-  status: string;
-
-  constructor(err, description: string = "") {
-    if (typeof err === "string") {
-      this.description = description;
-      this.status = err;
-    } else {
-      const fault = this.parse(err, "root.Envelope.Body.Fault.detail.RpFault");
-      this.status = fault.faultStatus;
-      this.description = fault.detailedDescription;
-    }
-  }
-
-  private parse(obj, key) {
-    return key.split(".").reduce(function(o, x) {
-      return typeof o === "undefined" || o === null ? o : o[x];
-    }, obj);
-  }
-}
-
-export interface EndUserInfo {
-  type: string;
-  value: string;
-}
-
-export interface RequirementAlternative {
-  requirement: RequirementAlternativeCondition;
-}
-
-export interface RequirementAlternativeCondition {
-  key: string;
-  value: string;
-}
-
-export interface BankIdOptions {
-  readonly requirementAlternatives?: [RequirementAlternative];
-  readonly endUserInfo?: [EndUserInfo];
-}
 
 export default class BankId {
   client?: any;

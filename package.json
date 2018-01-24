@@ -2,7 +2,7 @@
   "name": "bankid-api",
   "version": "1.0.0-alpha.1",
   "description": "API integration against BankId",
-  "main": "lib/bankid.js",
+  "main": "lib/index.js",
   "homepage": "https://github.com/danielkarlsson/node-bank-id#readme",
   "scripts": {
     "build":

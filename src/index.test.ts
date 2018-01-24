@@ -1,4 +1,4 @@
-import * as BankId from "bankid";
+import * as BankId from "./index";
 
 const bankid = new BankId({
   production: false, // use test environment
