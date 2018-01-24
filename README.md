@@ -1,6 +1,6 @@
 # API integration against BankId
 
-```json
+```js
 const BankId = require("../lib/BankId").default;
 
 const instance = new BankId(
