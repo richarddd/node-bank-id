@@ -4,6 +4,7 @@ import * as path from "path";
 
 import { BankIdOptions } from "./Models/BankIdOptions";
 import { BankIdError } from "./Models/BankIdError";
+import { CollectionResult } from "./Models/CollectionResult";
 
 const readFileAsync = (filePath, opts?: string) =>
   new Promise((res, rej) => {
@@ -72,9 +73,7 @@ export default class BankId {
 
     const params = Object.assign(
       {},
-      {
-        personalNumber: personalNumber
-      },
+      { personalNumber: personalNumber },
       options
     );
 
@@ -125,7 +124,6 @@ export default class BankId {
     );
 
     try {
-      //soap methods are pascal cased bruuh :(
       const result = await this.client.SignAsync(params);
       return result.orderRef;
     } catch (err) {
@@ -137,7 +135,7 @@ export default class BankId {
     orderRef: string,
     retryInterval: number = 2000,
     onEvent?: (status: string) => void
-  ) {
+  ): Promise<CollectionResult> {
     await this.init();
 
     const normalizedInterval = Math.min(Math.max(1000, retryInterval), 10000);
@@ -146,14 +144,16 @@ export default class BankId {
     let lastStatus;
     let interval;
     let inProgress = false;
-    let result;
+    let result: CollectionResult = {} as CollectionResult;
     let resolution;
 
     const intervalFunction = async () => {
       if (!inProgress) {
         try {
           inProgress = true;
-          result = await this.client.CollectAsync(orderRef);
+          result = (await this.client.CollectAsync(
+            orderRef
+          )) as CollectionResult;
           const progressStatus = result.progressStatus;
           if (onEvent && progressStatus !== lastStatus) {
             onEvent(progressStatus);
