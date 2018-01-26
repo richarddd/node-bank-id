@@ -68,7 +68,10 @@ export default class BankId {
     }
   }
 
-  async authenticate(personalNumber: string, options?: BankIdOptions) {
+  async authenticate(
+    personalNumber: string,
+    options?: BankIdOptions
+  ): Promise<string> {
     await this.init();
 
     const params = Object.assign(
@@ -91,7 +94,7 @@ export default class BankId {
     userVisibleData: string,
     userNonVisibleData: string,
     options: BankIdOptions
-  ) {
+  ): Promise<string> {
     await this.init();
 
     if (userVisibleData.length > 40 * 1000) {

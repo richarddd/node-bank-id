@@ -9,7 +9,7 @@ export default class BankId {
     soapUrl: string;
     constructor(pfxCertPath: string, caCertPath: string, passphrase: string, production?: boolean);
     init(): Promise<void>;
-    authenticate(personalNumber: string, options?: BankIdOptions): Promise<any>;
-    sign(personalNumber: string, userVisibleData: string, userNonVisibleData: string, options: BankIdOptions): Promise<any>;
+    authenticate(personalNumber: string, options?: BankIdOptions): Promise<string>;
+    sign(personalNumber: string, userVisibleData: string, userNonVisibleData: string, options: BankIdOptions): Promise<string>;
     collect(orderRef: string, retryInterval?: number, onEvent?: (status: string) => void): Promise<CollectionResult>;
 }

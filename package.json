@@ -1,18 +1,15 @@
 {
   "name": "bankid-api",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "API integration against BankId",
   "main": "lib/index.js",
   "homepage": "https://github.com/danielkarlsson/node-bank-id#readme",
   "scripts": {
-    "build": "rm -rf ./lib/* && ./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc --strictNullChecks",
+    "build":
+      "rm -rf ./lib/* && ./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc --strictNullChecks",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "bankid",
-    "authentication",
-    "backend"
-  ],
+  "keywords": ["bankid", "authentication", "backend"],
   "author": "Richard Davison",
   "license": "ISC",
   "devDependencies": {
