@@ -1,4 +1,4 @@
-const BankId = require("../lib/BankId").default;
+const BankId = require("../lib/index").default;
 
 const instance = new BankId(
   "../cert/bankid-test.pfx",
