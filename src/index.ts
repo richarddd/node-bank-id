@@ -5,6 +5,7 @@ import * as path from "path";
 import { BankIdOptions } from "./Models/BankIdOptions";
 import { BankIdError } from "./Models/BankIdError";
 import { CollectionResult } from "./Models/CollectionResult";
+import { OrderResponse } from "./Models/OrderResponse";
 
 const readFileAsync = (filePath, opts?: string) =>
   new Promise((res, rej) => {
@@ -69,21 +70,20 @@ export default class BankId {
   }
 
   async authenticate(
-    personalNumber: string,
+    personalNumber?: string,
     options?: BankIdOptions
-  ): Promise<string> {
+  ): Promise<OrderResponse> {
     await this.init();
 
     const params = Object.assign(
       {},
-      { personalNumber: personalNumber },
+      personalNumber ? { personalNumber: personalNumber } : {},
       options
     );
 
     try {
       //soap methods are pascal cased bruuh :(
-      const result = await this.client.AuthenticateAsync(params);
-      return result.orderRef;
+      return (await this.client.AuthenticateAsync(params)) as OrderResponse;
     } catch (err) {
       throw new BankIdError(err);
     }
@@ -94,7 +94,7 @@ export default class BankId {
     userVisibleData: string,
     userNonVisibleData: string,
     options: BankIdOptions
-  ): Promise<string> {
+  ): Promise<OrderResponse> {
     await this.init();
 
     if (userVisibleData.length > 40 * 1000) {
@@ -127,8 +127,7 @@ export default class BankId {
     );
 
     try {
-      const result = await this.client.SignAsync(params);
-      return result.orderRef;
+      return (await this.client.SignAsync(params)) as OrderResponse;
     } catch (err) {
       throw new BankIdError(err);
     }
@@ -137,7 +136,7 @@ export default class BankId {
   async collect(
     orderRef: string,
     retryInterval: number = 2000,
-    onEvent?: (status: string) => void
+    onEvent?: (status: string) => { void }
   ): Promise<CollectionResult> {
     await this.init();
 
@@ -159,7 +158,7 @@ export default class BankId {
           )) as CollectionResult;
           const progressStatus = result.progressStatus;
           if (onEvent && progressStatus !== lastStatus) {
-            onEvent(progressStatus);
+            await onEvent(progressStatus);
           }
           lastStatus = progressStatus;
           inProgress = false;
