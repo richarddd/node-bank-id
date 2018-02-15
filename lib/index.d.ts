@@ -11,7 +11,7 @@ export default class BankId {
     constructor(pfxCertPath: string, caCertPath: string, passphrase: string, production?: boolean);
     init(): Promise<void>;
     authenticate(personalNumber?: string, options?: BankIdOptions): Promise<OrderResponse>;
-    sign(personalNumber: string, userVisibleData: string, userNonVisibleData: string, options: BankIdOptions): Promise<OrderResponse>;
+    sign(userVisibleData: string, userNonVisibleData: string, personalNumber?: string, options?: BankIdOptions): Promise<OrderResponse>;
     collect(orderRef: string, retryInterval?: number, onEvent?: (status: string) => {
         void;
     }): Promise<CollectionResult>;

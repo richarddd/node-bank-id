@@ -90,10 +90,10 @@ export default class BankId {
   }
 
   async sign(
-    personalNumber: string,
     userVisibleData: string,
     userNonVisibleData: string,
-    options: BankIdOptions
+    personalNumber?: string,
+    options?: BankIdOptions
   ): Promise<OrderResponse> {
     await this.init();
 
@@ -118,8 +118,8 @@ export default class BankId {
 
     const params = Object.assign(
       {},
+      personalNumber ? { personalNumber: personalNumber } : {},
       {
-        personalNumber: personalNumber,
         userVisibleData: userVisibleData,
         userNonVisibleData: base64nonVisibleData
       },
@@ -148,6 +148,7 @@ export default class BankId {
     let inProgress = false;
     let result: CollectionResult = {} as CollectionResult;
     let resolution;
+    let called = false;
 
     const intervalFunction = async () => {
       if (!inProgress) {
@@ -168,7 +169,11 @@ export default class BankId {
             progressStatus === "EXPIRED_TRANSACTION"
           ) {
             clearInterval(interval);
-            resolution();
+            called = true;
+            if (resolution !== null) {
+              resolution();
+            }
+
             if (
               progressStatus === "NO_CLIENT" ||
               progressStatus === "EXPIRED_TRANSACTION"
@@ -180,7 +185,10 @@ export default class BankId {
           inProgress = false;
           error = err;
           clearInterval(interval);
-          resolution();
+          called = true;
+          if (resolution !== null) {
+            resolution();
+          }
         }
       }
     };
@@ -189,7 +197,11 @@ export default class BankId {
     await intervalFunction();
 
     await new Promise(resolve => {
-      resolution = resolve;
+      if (called) {
+        resolve();
+      } else {
+        resolution = resolve;
+      }
     });
 
     if (error) {
