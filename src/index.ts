@@ -170,7 +170,7 @@ export default class BankId {
           ) {
             clearInterval(interval);
             called = true;
-            if (resolution !== null) {
+            if (resolution !== undefined) {
               resolution();
             }
 
@@ -186,7 +186,7 @@ export default class BankId {
           error = err;
           clearInterval(interval);
           called = true;
-          if (resolution !== null) {
+          if (resolution !== undefined) {
             resolution();
           }
         }
