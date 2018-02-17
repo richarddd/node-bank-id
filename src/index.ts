@@ -178,7 +178,7 @@ export default class BankId {
               progressStatus === "NO_CLIENT" ||
               progressStatus === "EXPIRED_TRANSACTION"
             ) {
-              error = progressStatus;
+              error = new BankIdError(progressStatus);
             }
           }
         } catch (err) {
@@ -205,7 +205,7 @@ export default class BankId {
     });
 
     if (error) {
-      throw new BankIdError(error);
+      throw error;
     }
 
     return result;
