@@ -27,7 +27,7 @@ export default class BankId {
     pfxCertPath: string,
     caCertPath: string,
     passphrase: string,
-    production: boolean = false
+    production: boolean = false,
   ) {
     this.soapUrl = production
       ? "https://appapi2.bankid.com/rp/v4?wsdl"
@@ -44,22 +44,22 @@ export default class BankId {
         const pfxData = (await readFileAsync(this.pfxCertPath)) as string;
         const caData = (await readFileAsync(
           this.caCertPath,
-          "utf-8"
+          "utf-8",
         )) as string;
 
         const options = {
           wsdl_options: {
             pfx: pfxData,
             passphrase: this.passphrase,
-            ca: caData
-          }
+            ca: caData,
+          },
         };
         this.client = await soap.createClientAsync(this.soapUrl, options);
         this.client.setSecurity(
           new soap.ClientSSLSecurityPFX(pfxData, this.passphrase, {
             caData,
-            rejectUnauthorized: false
-          })
+            rejectUnauthorized: false,
+          }),
         );
 
         this.inited = true;
@@ -71,14 +71,14 @@ export default class BankId {
 
   async authenticate(
     personalNumber?: string,
-    options?: BankIdOptions
+    options?: BankIdOptions,
   ): Promise<OrderResponse> {
     await this.init();
 
     const params = Object.assign(
       {},
       personalNumber ? { personalNumber: personalNumber } : {},
-      options
+      options,
     );
 
     try {
@@ -93,7 +93,7 @@ export default class BankId {
     userVisibleData: string,
     userNonVisibleData: string,
     personalNumber?: string,
-    options?: BankIdOptions
+    options?: BankIdOptions,
   ): Promise<OrderResponse> {
     await this.init();
 
@@ -101,18 +101,18 @@ export default class BankId {
       //TODO add error message
       throw new BankIdError(
         "CLIENT_ERROR",
-        "User visible data exceeds 40k chars"
+        "User visible data exceeds 40k chars",
       );
     }
 
     const base64nonVisibleData = new Buffer(userNonVisibleData).toString(
-      "base64"
+      "base64",
     );
     if (base64nonVisibleData.length > 200 * 1000) {
       //TODO add error message
       throw new BankIdError(
         "CLIENT_ERROR",
-        "User non-visible data exceeds 200k chars"
+        "User non-visible data exceeds 200k chars",
       );
     }
 
@@ -121,9 +121,9 @@ export default class BankId {
       personalNumber ? { personalNumber: personalNumber } : {},
       {
         userVisibleData: userVisibleData,
-        userNonVisibleData: base64nonVisibleData
+        userNonVisibleData: base64nonVisibleData,
       },
-      options
+      options,
     );
 
     try {
@@ -136,7 +136,7 @@ export default class BankId {
   async collect(
     orderRef: string,
     retryInterval: number = 2000,
-    onEvent?: (status: string) => { void }
+    onEvent?: (status: string) => Promise<void>,
   ): Promise<CollectionResult> {
     await this.init();
 
@@ -155,7 +155,7 @@ export default class BankId {
         try {
           inProgress = true;
           result = (await this.client.CollectAsync(
-            orderRef
+            orderRef,
           )) as CollectionResult;
           const progressStatus = result.progressStatus;
           if (onEvent && progressStatus !== lastStatus) {
@@ -196,7 +196,7 @@ export default class BankId {
     interval = setInterval(intervalFunction, normalizedInterval);
     await intervalFunction();
 
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       if (called) {
         resolve();
       } else {

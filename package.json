@@ -1,6 +1,6 @@
 {
   "name": "bankid-api",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "description": "API integration against BankId",
   "main": "lib/index.js",
   "homepage": "https://github.com/danielkarlsson/node-bank-id#readme",
@@ -12,6 +12,8 @@
   "keywords": ["bankid", "authentication", "backend"],
   "author": "Richard Davison",
   "license": "ISC",
+  "types": "lib/index.d.ts",
+  "typings": "lib/index.d.ts",
   "devDependencies": {
     "@types/node": "^9.3.0",
     "tslint": "^5.9.1",

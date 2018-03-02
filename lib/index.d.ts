@@ -12,7 +12,5 @@ export default class BankId {
     init(): Promise<void>;
     authenticate(personalNumber?: string, options?: BankIdOptions): Promise<OrderResponse>;
     sign(userVisibleData: string, userNonVisibleData: string, personalNumber?: string, options?: BankIdOptions): Promise<OrderResponse>;
-    collect(orderRef: string, retryInterval?: number, onEvent?: (status: string) => {
-        void;
-    }): Promise<CollectionResult>;
+    collect(orderRef: string, retryInterval?: number, onEvent?: (status: string) => Promise<void>): Promise<CollectionResult>;
 }
