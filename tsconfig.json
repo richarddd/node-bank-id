@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "lib": ["es6"],
+    // "module": "amd",
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitReturns": true,
     "declaration": true,
     "outDir": "./lib",
+    // "outFile": "./lib/index.js",
     "sourceMap": true,
     "target": "es6"
   },
