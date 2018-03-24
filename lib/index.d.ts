@@ -31,7 +31,7 @@ export interface CompletionData {
 }
 export interface BankIdOptions {
     readonly personalNumber?: string;
-    readonly requirement: Object;
+    readonly requirement?: Object;
 }
 export interface OrderResponse {
     orderRef: string;
